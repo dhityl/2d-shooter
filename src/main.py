@@ -155,12 +155,14 @@ spawn_rate = 120 # lower = faster
 kill_count = 7
 
 cooldown = 30
-level = 1
 boss_summoned=False
 
 
 
-# main game loop
+
+## MAIN GAME LOOP ##
+
+
 while True:
     #exit handling
     for event in pygame.event.get():
@@ -175,24 +177,26 @@ while True:
     pygame.mouse.set_cursor(pygame.cursors.diamond)
     screen.fill((50,50,50))
 
+    level = kill_count//10
+    player.damage = 10 + 0.1 * level
     player.draw()
 
-    if pygame.key.get_pressed()[pygame.K_LSHIFT]: # more precise/slower movement if you press shift
-        player.move(speed = 4)
+    if pygame.key.get_pressed()[pygame.K_LSHIFT]: # faster movement if you press shift
+        player.move(speed = 8)
     else:
-        player.move()
+        player.move(speed = 4)
 
     shoot_rate = 25-level
     shoot_timer = handle_bullets(player, shoot_timer, shoot_rate)
 
-    spawn_rate = 120- level*2
+    spawn_rate = 120 - level*2
     spawn_timer = handle_enemy_spawn(spawn_timer, spawn_rate, enemies)
 
     update_enemy(enemies)
 
 
     # handle collision
-    # bullet vs enemy
+    ## bullet vs enemy
     for bullet in player.bullets[:]:
         for enemy in enemies[:]:
             dx = enemy.center[0] - bullet.x
@@ -210,15 +214,13 @@ while True:
 
                         if isinstance(enemy, Boss): 
                             boss_summoned = False
-                            level += 1
-                            player.hp += 20
-                            if level>10: level=10
+                            player.hp += 10
 
                     # display hit marker
                     hit_marker_pos = np.array(enemy.center) + np.array([0, -20])
                     screen.blit(img, hit_marker_pos)
 
-    #player vs enemy
+    ## player vs enemy
     cooldown-=1
     if cooldown <=0:
         for enemy in enemies[:]:
@@ -230,20 +232,24 @@ while True:
             if dist < enemy.radius + player.radius:
                 took_damage = True
                 player.hp -= enemy.damage
-                print(player.hp)
                 cooldown = 30 # 30 frame immunity
     
     # summond boss every 10 kills
     if kill_count % 10 == 0 and kill_count != 0:
-        if not boss_summoned:
-            spawn_boss(kill_count, enemies)
-            boss_summoned = True
+        spawn_boss(kill_count, enemies)
+        kill_count += 1
 
     # overlay text
     font.render_to(screen, (20, 20), str(kill_count), 'White')
 
-    if cooldown>0: font.render_to(screen, (20, height-40), 'HP: '+str(int(player.hp)), 'Red')
-    else: font.render_to(screen, (20, height-40), 'HP: '+str(int(player.hp)), 'White')
+    hp_text = 'HP: '+str(int(player.hp))
+    if cooldown>0: font.render_to(screen, (20, height-40), hp_text, 'Red')
+    else: font.render_to(screen, (20, height-40), hp_text, 'White')
+
+    level_text = f"Level {level+1}"
+    rect = font.get_rect(level_text)  # Get text dimensions
+    font.render_to(screen, (width - rect.width - 20, 20), level_text, 'White')
+
 
     pygame.display.update()
     clock.tick(60)
