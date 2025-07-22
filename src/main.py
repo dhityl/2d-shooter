@@ -4,7 +4,11 @@ import pygame.freetype
 from pygame.locals import*
 
 
-img = pygame.image.load('./resources/hit_marker.png')
+img_hit_marker = pygame.image.load('./resources/hit_marker.png')
+img_heart_icon = pygame.image.load('./resources/heart_icon.png')
+img_bomb_icon = pygame.image.load('./resources/bomb_icon.png')
+img_bomb = pygame.image.load('./resources/bomb.png')
+
 width, height = 1280, 720
 
 pygame.init()
@@ -143,16 +147,22 @@ def update_enemy(enemies):
         enemy.chase(player.center)
         enemy.draw()
 
+def drop_bomb(count):
+    if count<=0: return
+
+    
+
 
 
 player = Character(color='Green')
 shoot_timer = 0
 shoot_rate = 25 # lower = faster
+bomb_count = 0
 
 enemies = []
 spawn_timer = 0
 spawn_rate = 120 # lower = faster
-kill_count = 7
+kill_count = 0
 
 cooldown = 30
 boss_summoned=False
@@ -172,13 +182,16 @@ while True:
     if pygame.key.get_pressed()[pygame.K_ESCAPE]:
         pygame.quit()
         sys.exit()
+    if pygame.key.get_pressed()[pygame.K_SPACE]:
+        drop_bomb(bomb_count)
 
 
     pygame.mouse.set_cursor(pygame.cursors.diamond)
     screen.fill((50,50,50))
 
     level = kill_count//10
-    player.damage = 10 + 0.1 * level
+    if level>25: level = 25
+    player.damage = 10 + 0.2 * (kill_count/10)
     player.draw()
 
     if pygame.key.get_pressed()[pygame.K_LSHIFT]: # faster movement if you press shift
@@ -218,7 +231,7 @@ while True:
 
                     # display hit marker
                     hit_marker_pos = np.array(enemy.center) + np.array([0, -20])
-                    screen.blit(img, hit_marker_pos)
+                    screen.blit(img_hit_marker, hit_marker_pos)
 
     ## player vs enemy
     cooldown-=1
@@ -242,13 +255,23 @@ while True:
     # overlay text
     font.render_to(screen, (20, 20), str(kill_count), 'White')
 
-    hp_text = 'HP: '+str(int(player.hp))
-    if cooldown>0: font.render_to(screen, (20, height-40), hp_text, 'Red')
-    else: font.render_to(screen, (20, height-40), hp_text, 'White')
-
     level_text = f"Level {level+1}"
-    rect = font.get_rect(level_text)  # Get text dimensions
-    font.render_to(screen, (width - rect.width - 20, 20), level_text, 'White')
+    ltrect = font.get_rect(level_text)  # Get text dimensions
+    font.render_to(screen, (width - ltrect.width - 20, 20), level_text, 'White')
+
+    hp_icon_pos = (10, height - 45)
+    hp_text = str(int(player.hp))
+    screen.blit(img_heart_icon, hp_icon_pos)
+    if cooldown>0: font.render_to(screen, (60, height-40), hp_text, 'Red')
+    else: font.render_to(screen, (60, height-40), hp_text, 'White')
+
+    bomb_text = str(int(bomb_count))
+    btrect = font.get_rect(bomb_text)
+    birect = pygame.Surface.get_rect(img_bomb_icon)
+    bomb_icon_pos = width-birect.width-btrect.width-30, height-birect.height-15
+    screen.blit(img_bomb_icon, bomb_icon_pos)
+    font.render_to(screen, (width-btrect.width-20,  height-btrect.height-20), bomb_text, 'White')
+
 
 
     pygame.display.update()
