@@ -6,4 +6,4 @@ to do:
 4. add game over condition and screen
 5. add ability to restart
 
-![honest_reactor]([https://tenor.com/view/my-honest-reaction-honest-reaction-my-honest-reaction-gif-12778415257106724](https://raup.s-ul.eu/3gXzrQ5W))
+![honest_reactor]((https://raup.s-ul.eu/3gXzrQ5W))
