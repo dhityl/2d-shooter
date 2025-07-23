@@ -147,17 +147,25 @@ def update_enemy(enemies):
         enemy.chase(player.center)
         enemy.draw()
 
-def drop_bomb(count):
+def drop_bomb(count, player):
     if count<=0: return
+    x,y = player.center
+    screen.blit(img_bomb, (500, 500))
 
-    
+def get_bomb_pos(player):
+    BIrect = pygame.Surface.get_rect(img_bomb)
+    return np.subtract(player.center, (BIrect.width, BIrect.height))
+
+
 
 
 
 player = Character(color='Green')
 shoot_timer = 0
 shoot_rate = 25 # lower = faster
-bomb_count = 0
+
+bomb_count = 10
+dropped_bomb = False
 
 enemies = []
 spawn_timer = 0
@@ -166,6 +174,7 @@ kill_count = 0
 
 cooldown = 30
 boss_summoned=False
+level = 0
 
 
 
@@ -182,16 +191,15 @@ while True:
     if pygame.key.get_pressed()[pygame.K_ESCAPE]:
         pygame.quit()
         sys.exit()
-    if pygame.key.get_pressed()[pygame.K_SPACE]:
-        drop_bomb(bomb_count)
+
 
 
     pygame.mouse.set_cursor(pygame.cursors.diamond)
     screen.fill((50,50,50))
 
-    level = kill_count//10
-    if level>25: level = 25
-    player.damage = 10 + 0.2 * (kill_count/10)
+
+    if level>25: level = 25 # capped level cause bad shoot_rate scaling, TODO: fix ts
+    player.damage = 10 + 0.2 * level
     player.draw()
 
     if pygame.key.get_pressed()[pygame.K_LSHIFT]: # faster movement if you press shift
@@ -225,9 +233,11 @@ while True:
                         enemies.remove(enemy)
                         kill_count+=1
 
-                        if isinstance(enemy, Boss): 
+                        if isinstance(enemy, Boss):
+                            level+=1
                             boss_summoned = False
                             player.hp += 10
+                            bomb_count+=1
 
                     # display hit marker
                     hit_marker_pos = np.array(enemy.center) + np.array([0, -20])
@@ -252,6 +262,15 @@ while True:
         spawn_boss(kill_count, enemies)
         kill_count += 1
 
+    if pygame.key.get_pressed()[pygame.K_SPACE]:
+        if bomb_count>0: 
+            bomb_drop_pos = get_bomb_pos(player)
+            dropped_bomb = True
+            bomb_count-=1
+
+    if dropped_bomb: 
+        screen.blit(img_bomb, bomb_drop_pos)
+
     # overlay text
     font.render_to(screen, (20, 20), str(kill_count), 'White')
 
@@ -271,7 +290,6 @@ while True:
     bomb_icon_pos = width-birect.width-btrect.width-30, height-birect.height-15
     screen.blit(img_bomb_icon, bomb_icon_pos)
     font.render_to(screen, (width-btrect.width-20,  height-btrect.height-20), bomb_text, 'White')
-
 
 
     pygame.display.update()
