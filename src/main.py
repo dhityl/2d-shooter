@@ -14,7 +14,7 @@ width, height = 1280, 720
 pygame.init()
 screen = pygame.display.set_mode((width, height))
 font = pygame.freetype.Font('./resources/Pixeltype.ttf', 60)
-pygame.display.set_caption("Gaem")
+pygame.display.set_caption("2D Shooter")
 clock = pygame.time.Clock()
 
 
@@ -88,7 +88,7 @@ class Character:
 class Enemy(Character):
     def __init__(self, center, speed=2, radius=20, color='Red', damage=10):
         super().__init__(radius=radius, center=center, color=color)
-        self.speed = speed  # Override player's speed if needed
+        self.speed = speed
         self.hp = 20
         self.damage = damage
 
@@ -146,17 +146,24 @@ def update_enemy(enemies):
     for enemy in enemies:
         enemy.chase(player.center)
         enemy.draw()
-
-def drop_bomb(count, player):
-    if count<=0: return
-    x,y = player.center
-    screen.blit(img_bomb, (500, 500))
+        if enemy.hp <= 0:
+            enemies.remove(enemy)
 
 def get_bomb_pos(player):
     BIrect = pygame.Surface.get_rect(img_bomb)
     return np.subtract(player.center, (BIrect.width, BIrect.height))
 
-
+def explode_bomb(pos, level, enemies):
+    bx,by = pos
+    damage_radius = 200
+    damage = 50 + 2*level
+    for enemy in enemies[:]:
+        ex, ey = enemy.center
+        dx = abs(ex-bx)
+        dy = abs(ey-by)
+        dist = math.hypot(dx,dy)
+        if dist <= damage_radius:
+            enemy.hp -= damage
 
 
 
@@ -165,7 +172,10 @@ shoot_timer = 0
 shoot_rate = 25 # lower = faster
 
 bomb_count = 10
-dropped_bomb = False
+display_bomb = False
+bomb_cooldown = 0
+bomb_delay = 30
+bomb_timer = 0
 
 enemies = []
 spawn_timer = 0
@@ -183,31 +193,31 @@ level = 0
 
 
 while True:
+    keys = pygame.key.get_pressed()
+
     #exit handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+    if keys[pygame.K_ESCAPE]:
         pygame.quit()
         sys.exit()
-
-
 
     pygame.mouse.set_cursor(pygame.cursors.diamond)
     screen.fill((50,50,50))
 
 
-    if level>25: level = 25 # capped level cause bad shoot_rate scaling, TODO: fix ts
-    player.damage = 10 + 0.2 * level
+    if level>25: level = 25 # capped level cause bad shoot_rate scaling, TODO: fix ts (cap shoot_rate instead)
+    player.damage = 10 + 0.175 * level
     player.draw()
 
-    if pygame.key.get_pressed()[pygame.K_LSHIFT]: # faster movement if you press shift
+    if keys[pygame.K_LSHIFT]: # faster movement if you press shift
         player.move(speed = 8)
     else:
         player.move(speed = 4)
 
-    shoot_rate = 25-level
+    shoot_rate = 25 - level
     shoot_timer = handle_bullets(player, shoot_timer, shoot_rate)
 
     spawn_rate = 120 - level*2
@@ -262,14 +272,23 @@ while True:
         spawn_boss(kill_count, enemies)
         kill_count += 1
 
-    if pygame.key.get_pressed()[pygame.K_SPACE]:
-        if bomb_count>0: 
-            bomb_drop_pos = get_bomb_pos(player)
-            dropped_bomb = True
-            bomb_count-=1
+    # bomb logic
+    bomb_cooldown-=1
+    if keys[pygame.K_SPACE] and not display_bomb and bomb_cooldown<=0 and bomb_count>0:
+        bomb_drop_pos = get_bomb_pos(player)
+        display_bomb = True
+        bomb_timer = bomb_delay
+        bomb_cooldown = 60
+        bomb_count-=1
 
-    if dropped_bomb: 
+    if display_bomb:
         screen.blit(img_bomb, bomb_drop_pos)
+        bomb_timer -= 1
+        if bomb_timer <= 0:
+            explode_bomb(bomb_drop_pos, level, enemies)
+            display_bomb = False
+            bomb_pos = None
+
 
     # overlay text
     font.render_to(screen, (20, 20), str(kill_count), 'White')
