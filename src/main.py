@@ -13,7 +13,10 @@ width, height = 1280, 720
 
 pygame.init()
 screen = pygame.display.set_mode((width, height))
+font_big = pygame.freetype.Font('./resources/Pixeltype.ttf', 100)
 font = pygame.freetype.Font('./resources/Pixeltype.ttf', 60)
+font_shadow = pygame.freetype.Font('./resources/Pixeltype.ttf', 66)
+font_small = pygame.freetype.Font('./resources/Pixeltype.ttf', 30)
 pygame.display.set_caption("2D Shooter")
 clock = pygame.time.Clock()
 
@@ -55,7 +58,9 @@ class Character:
         self.damage = damage
 
     def draw(self, surface = screen):
+        pygame.draw.circle(surface, 'Black', self.center, self.radius+2)
         pygame.draw.circle(surface, self.color, self.center, self.radius)
+
 
     def move(self, speed = None):
         if speed == None:
@@ -191,18 +196,51 @@ level = 0
 
 ## MAIN GAME LOOP ##
 
-
+start_game = False
 while True:
     keys = pygame.key.get_pressed()
 
-    #exit handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    if keys[pygame.K_ESCAPE]:
-        pygame.quit()
-        sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+            if not start_game:
+                if event.key == pygame.K_RETURN:
+                    start_game = True
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            else:               
+                if event.key == pygame.K_ESCAPE:
+                    start_game = False     
+                    pygame.event.clear()               
+
+    if not start_game:
+        screen.fill('Black')
+        start_text1 = 'A Simple 2D Shooter'
+        t1rect = font_big.get_rect(start_text1)
+        start_text2 = 'Just Aim to Shoot'
+        start_text3 = 'SHIFT = Move Faster, SPACE = Drop Bomb, ESC = Quit'
+        start_text4 = 'Press ENTER to start'
+        font_big.render_to(screen, (300, 200), start_text1, 'White')
+        font_small.render_to(screen, (300, t1rect.height + 240), start_text2, 'White')
+        font_small.render_to(screen, (300, t1rect.height + 340), start_text3, 'White')
+        font_small.render_to(screen, (300, t1rect.height + 440), start_text4, 'White')
+
+        if keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]:
+            start_game = True
+
+
+        # level_text = f"Level {level+1}"
+        # ltrect = font.get_rect(level_text)
+        # font.render_to(screen, (width - ltrect.width - 20, 20), level_text, 'White')
+
+        pygame.display.flip()
+        continue
+
+    # GAME START
 
     pygame.mouse.set_cursor(pygame.cursors.diamond)
     screen.fill((50,50,50))
