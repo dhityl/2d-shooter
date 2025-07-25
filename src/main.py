@@ -17,6 +17,7 @@ font_big = pygame.freetype.Font('./resources/Pixeltype.ttf', 100)
 font = pygame.freetype.Font('./resources/Pixeltype.ttf', 60)
 font_shadow = pygame.freetype.Font('./resources/Pixeltype.ttf', 66)
 font_small = pygame.freetype.Font('./resources/Pixeltype.ttf', 30)
+font_tiny = pygame.freetype.Font('./resources/Pixeltype.ttf', 10)
 pygame.display.set_caption("2D Shooter")
 clock = pygame.time.Clock()
 
@@ -184,23 +185,29 @@ while True:
             sys.exit()
 
         if event.type == pygame.KEYDOWN:
-            if not start_game:
+            if not start_game:                  # GAME NOT STARTED
                 if event.key == pygame.K_RETURN:
                     start_game = True
                     initialize_var = True
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-            elif game_over:
+            elif game_over:                     # GAME OVER
                 if event.key == pygame.K_RETURN:
                         initialize_var = True
                         game_over = False
                 if event.key == pygame.K_ESCAPE:
                     start_game = False
                     game_over = False
-            else:               
+            else:                               # GAME ONGOING
                 if event.key == pygame.K_ESCAPE:
-                    start_game = False                
+                    start_game = False
+                if event.key == pygame.K_TAB:
+                    print('\nShoot rate:', str(shoot_rate),
+                          "\nDamage:", str(player.damage),
+                          '\nSpawn rate:', str(spawn_rate),
+                          '\nBomb damage:', str(50 + 2*level))
+                            
 
     if not start_game:
         screen.fill('Black')
