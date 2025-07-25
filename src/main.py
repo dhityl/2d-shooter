@@ -232,6 +232,25 @@ while True:
         font_big.render_to(screen, (width/2 - gorect.width/2, 300), 'GAME OVER', 'Red')
         font.render_to(screen, (width/2 - rerect.width/2, 400), 'Press ENTER to restart', 'Red')
 
+        # overlay text
+        font.render_to(screen, (20, 20), str(kill_count), 'White')
+
+        level_text = f"Level {level+1}"
+        ltrect = font.get_rect(level_text)
+        font.render_to(screen, (width - ltrect.width - 20, 20), level_text, 'White')
+
+        hp_icon_pos = (10, height - 45)
+        hp_text = str(int(player.hp))
+        screen.blit(img_heart_icon, hp_icon_pos)
+        font.render_to(screen, (60, height-40), hp_text, 'Red')
+
+        bomb_text = str(int(bomb_count))
+        btrect = font.get_rect(bomb_text)
+        birect = pygame.Surface.get_rect(img_bomb_icon)
+        bomb_icon_pos = width-birect.width-btrect.width-30, height-birect.height-15
+        screen.blit(img_bomb_icon, bomb_icon_pos)
+        font.render_to(screen, (width-btrect.width-20,  height-btrect.height-20), bomb_text, 'White')
+
         pygame.display.flip()
         continue
 
@@ -263,7 +282,7 @@ while True:
     screen.fill((50,50,50))
 
 
-    if level>25: level = 25 # capped level cause bad shoot_rate scaling, TODO: fix ts (cap shoot_rate instead)
+    # if level>25: level = 25 # capped level cause bad shoot_rate scaling, TODO: fix ts (cap shoot_rate instead)
     player.damage = 10 + 0.175 * level
     player.draw()
 
