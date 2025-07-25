@@ -143,7 +143,7 @@ def spawn_boss(kills, enemies):
     enemies.append(enemy)
 
 def update_enemy(enemies):
-    for enemy in enemies:
+    for enemy in enemies[:]:
         enemy.chase(player.center)
         enemy.draw()
         if enemy.hp <= 0:
@@ -233,7 +233,7 @@ while True:
             dx = enemy.center[0] - bullet.x
             dy = enemy.center[1] - bullet.y
             dist = math.hypot(dx, dy)
-            if dist < enemy.radius + bullet.radius: # enemy + bullet radius
+            if dist < enemy.radius + bullet.radius:
                 if bullet in player.bullets:
                     player.bullets.remove(bullet)
                     enemy.hp -= player.damage
@@ -265,12 +265,14 @@ while True:
             if dist < enemy.radius + player.radius:
                 took_damage = True
                 player.hp -= enemy.damage
-                cooldown = 30 # 30 frame immunity
+                cooldown = 30 # 30 frame damage immunity
     
-    # summond boss every 10 kills
+
+    # summon boss every 10 kills
     if kill_count % 10 == 0 and kill_count != 0:
         spawn_boss(kill_count, enemies)
         kill_count += 1
+
 
     # bomb logic
     bomb_cooldown-=1
@@ -294,7 +296,7 @@ while True:
     font.render_to(screen, (20, 20), str(kill_count), 'White')
 
     level_text = f"Level {level+1}"
-    ltrect = font.get_rect(level_text)  # Get text dimensions
+    ltrect = font.get_rect(level_text)
     font.render_to(screen, (width - ltrect.width - 20, 20), level_text, 'White')
 
     hp_icon_pos = (10, height - 45)
@@ -309,7 +311,6 @@ while True:
     bomb_icon_pos = width-birect.width-btrect.width-30, height-birect.height-15
     screen.blit(img_bomb_icon, bomb_icon_pos)
     font.render_to(screen, (width-btrect.width-20,  height-btrect.height-20), bomb_text, 'White')
-
 
     pygame.display.update()
     clock.tick(60)
