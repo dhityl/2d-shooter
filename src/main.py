@@ -172,30 +172,10 @@ def explode_bomb(pos, level, enemies):
 
 
 
-player = Character(color='Green')
-shoot_timer = 0
-shoot_rate = 25 # lower = faster
-
-bomb_count = 10
-display_bomb = False
-bomb_cooldown = 0
-bomb_delay = 30
-bomb_timer = 0
-
-enemies = []
-spawn_timer = 0
-spawn_rate = 120 # lower = faster
-kill_count = 0
-
-cooldown = 30
-boss_summoned=False
-level = 0
-
-
-
-
 ## MAIN GAME LOOP ##
 
+initialize_var = True
+game_over = False
 start_game = False
 while True:
     keys = pygame.key.get_pressed()
@@ -209,9 +189,15 @@ while True:
             if not start_game:
                 if event.key == pygame.K_RETURN:
                     start_game = True
+                    initialize_var = True
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
+            elif game_over:
+                if event.key == pygame.K_RETURN:
+                        start_game = True
+                        initialize_var = True
+                        game_over = False
             else:               
                 if event.key == pygame.K_ESCAPE:
                     start_game = False     
@@ -239,6 +225,38 @@ while True:
 
         pygame.display.flip()
         continue
+
+    if game_over:
+        screen.fill('Black')
+        gorect = font_big.get_rect('GAME OVER')
+        rerect = font.get_rect('Press ENTER to restart')
+        font_big.render_to(screen, (width/2 - gorect.width/2, 300), 'GAME OVER', 'Red')
+        font.render_to(screen, (width/2 - rerect.width/2, 400), 'Press ENTER to restart', 'Red')
+
+        pygame.display.flip()
+        continue
+
+    if initialize_var:
+        player = Character(color='Green')
+        shoot_timer = 0
+        shoot_rate = 25 # lower = faster
+
+        bomb_count = 10
+        display_bomb = False
+        bomb_cooldown = 0
+        bomb_delay = 30
+        bomb_timer = 0
+
+        enemies = []
+        spawn_timer = 0
+        spawn_rate = 120 # lower = faster
+        kill_count = 0
+
+        cooldown = 30
+        boss_summoned=False
+        level = 0
+
+        initialize_var = False
 
     # GAME START
 
@@ -349,6 +367,8 @@ while True:
     bomb_icon_pos = width-birect.width-btrect.width-30, height-birect.height-15
     screen.blit(img_bomb_icon, bomb_icon_pos)
     font.render_to(screen, (width-btrect.width-20,  height-btrect.height-20), bomb_text, 'White')
+
+    if player.hp <=0: game_over = True
 
     pygame.display.update()
     clock.tick(60)
