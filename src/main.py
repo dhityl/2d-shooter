@@ -151,8 +151,6 @@ def update_enemy(enemies):
     for enemy in enemies[:]:
         enemy.chase(player.center)
         enemy.draw()
-        if enemy.hp <= 0:
-            enemies.remove(enemy)
 
 def get_bomb_pos(player):
     BIrect = pygame.Surface.get_rect(img_bomb)
@@ -195,13 +193,14 @@ while True:
                     sys.exit()
             elif game_over:
                 if event.key == pygame.K_RETURN:
-                        start_game = True
                         initialize_var = True
                         game_over = False
+                if event.key == pygame.K_ESCAPE:
+                    start_game = False
+                    game_over = False
             else:               
                 if event.key == pygame.K_ESCAPE:
-                    start_game = False     
-                    pygame.event.clear()               
+                    start_game = False                
 
     if not start_game:
         screen.fill('Black')
@@ -280,6 +279,10 @@ while True:
     spawn_timer = handle_enemy_spawn(spawn_timer, spawn_rate, enemies)
 
     update_enemy(enemies)
+    for enemy in enemies[:]:
+            if enemy.hp <= 0:
+                enemies.remove(enemy)
+                kill_count+=1
 
 
     # handle collision
@@ -334,13 +337,14 @@ while True:
     bomb_cooldown-=1
     if keys[pygame.K_SPACE] and not display_bomb and bomb_cooldown<=0 and bomb_count>0:
         bomb_drop_pos = get_bomb_pos(player)
+        bomb_display_pos = bomb_drop_pos[0] +  30,  bomb_drop_pos[1] + 30
         display_bomb = True
         bomb_timer = bomb_delay
         bomb_cooldown = 60
         bomb_count-=1
 
     if display_bomb:
-        screen.blit(img_bomb, bomb_drop_pos)
+        screen.blit(img_bomb, (bomb_display_pos))
         bomb_timer -= 1
         if bomb_timer <= 0:
             explode_bomb(bomb_drop_pos, level, enemies)
