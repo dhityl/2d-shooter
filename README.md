@@ -2,14 +2,14 @@
 Made in python, uses pygame, math, sys, random
 
 `
-AIM to SHOOT
-LSHIFT to SPRINT
-SPACE to DROP BOMB
-ESC to EXIT
+AIM to SHOOT<br>
+LSHIFT to SPRINT<br>
+SPACE to DROP BOMB<br>
+ESC to EXIT<br>
 `
 
 
-__
+____
 Icons from <a href="https://www.flaticon.com/free-icons/" title="icons">Flaticon</a><br>
 Sound Effects from <a href="https://www.freesound.org" title="icons">Freesound</a>
 
