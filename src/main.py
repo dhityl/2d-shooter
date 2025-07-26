@@ -12,12 +12,21 @@ img_bomb = pygame.image.load('./resources/bomb.png')
 width, height = 1280, 720
 
 pygame.init()
+pygame.mixer.init()
+
 screen = pygame.display.set_mode((width, height))
+
 font_big = pygame.freetype.Font('./resources/Pixeltype.ttf', 100)
 font = pygame.freetype.Font('./resources/Pixeltype.ttf', 60)
 font_shadow = pygame.freetype.Font('./resources/Pixeltype.ttf', 66)
 font_small = pygame.freetype.Font('./resources/Pixeltype.ttf', 30)
 font_tiny = pygame.freetype.Font('./resources/Pixeltype.ttf', 10)
+
+shoot = pygame.mixer.Sound('./resources/shoot.wav')
+hit = pygame.mixer.Sound('./resources/hit.wav')
+explosion = pygame.mixer.Sound('./resources/explosion.wav')
+hurt = pygame.mixer.Sound('./resources/hurt.wav')
+
 pygame.display.set_caption("2D Shooter")
 clock = pygame.time.Clock()
 
@@ -82,6 +91,7 @@ class Character:
         target = pygame.mouse.get_pos() 
         bullet = Bullet(self.center, target)
         self.bullets.append(bullet)
+        pygame.mixer.Sound.play(shoot)
 
     def update_bullets(self):
         for bullet in self.bullets[:]:
@@ -162,7 +172,9 @@ def explode_bomb(pos, level, enemies):
     bx,by = pos
     damage_radius = 200
     damage = 50 + 4*level
+    # explosion effects
     pygame.draw.circle(screen, (25, 25, 25), (int(bx), int(by)), damage_radius, 2)
+    pygame.mixer.Sound.play(explosion)
     for enemy in enemies[:]:
         ex, ey = enemy.center
         dx = abs(ex-bx)
@@ -337,9 +349,10 @@ while True:
                                 '\nSpawn rate:', str(spawn_rate),
                                 '\nBomb damage:', str(50 + 4*level))
 
-                    # display hit marker
+                    # display hit effects
                     hit_marker_pos = np.array(enemy.center) + np.array([0, -20])
                     screen.blit(img_hit_marker, hit_marker_pos)
+                    pygame.mixer.Sound.play(hit)
 
     ## player vs enemy
     cooldown-=1
@@ -352,6 +365,7 @@ while True:
             took_damage = False
             if dist < enemy.radius + player.radius:
                 took_damage = True
+                pygame.mixer.Sound.play(hurt)
                 player.hp -= enemy.damage
                 cooldown = 30 # 30 frame damage immunity
     
