@@ -4,13 +4,13 @@ Made in python, uses pygame, math, sys, random
 
 `
 AIM to SHOOT
-`
+`<br>
 `
 LSHIFT to SPRINT
-`
+`<br>
 `
 SPACE to DROP BOMB
-`
+`<br>
 `
 ESC to EXIT
 `
