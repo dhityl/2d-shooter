@@ -4,10 +4,10 @@ import pygame.freetype
 from pygame.locals import*
 
 
-img_hit_marker = pygame.image.load('./resources/hit_marker.png')
-img_heart_icon = pygame.image.load('./resources/heart_icon.png')
-img_bomb_icon = pygame.image.load('./resources/bomb_icon.png')
-img_bomb = pygame.image.load('./resources/bomb.png')
+img_hit_marker = pygame.image.load('./resources/images/hit_marker.png')
+img_heart_icon = pygame.image.load('./resources/images/heart_icon.png')
+img_bomb_icon = pygame.image.load('./resources/images/bomb_icon.png')
+img_bomb = pygame.image.load('./resources/images/bomb.png')
 
 width, height = 1280, 720
 
@@ -22,10 +22,10 @@ font_shadow = pygame.freetype.Font('./resources/Pixeltype.ttf', 66)
 font_small = pygame.freetype.Font('./resources/Pixeltype.ttf', 30)
 font_tiny = pygame.freetype.Font('./resources/Pixeltype.ttf', 10)
 
-shoot = pygame.mixer.Sound('./resources/shoot.wav')
-hit = pygame.mixer.Sound('./resources/hit.wav')
-explosion = pygame.mixer.Sound('./resources/explosion.wav')
-hurt = pygame.mixer.Sound('./resources/hurt.wav')
+shoot = pygame.mixer.Sound('./resources/sounds/shoot.wav')
+hit = pygame.mixer.Sound('./resources/sounds/hit.wav')
+explosion = pygame.mixer.Sound('./resources/sounds/explosion.wav')
+hurt = pygame.mixer.Sound('./resources/sounds/hurt.wav')
 
 pygame.display.set_caption("2D Shooter")
 clock = pygame.time.Clock()
