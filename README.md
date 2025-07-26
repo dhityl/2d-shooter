@@ -1,11 +1,18 @@
 # A Simple 2D Shooter game
 Made in python, uses pygame, math, sys, random
 
+
 `
-AIM to SHOOT<br>
-LSHIFT to SPRINT<br>
-SPACE to DROP BOMB<br>
-ESC to EXIT<br>
+AIM to SHOOT
+`
+`
+LSHIFT to SPRINT
+`
+`
+SPACE to DROP BOMB
+`
+`
+ESC to EXIT
 `
 
 
