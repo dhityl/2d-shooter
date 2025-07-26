@@ -1,9 +1,21 @@
-to do:
+# A Simple 2D Shooter game
+Made in python, uses pygame, math, sys, random
 
-1. ~~ add ability to drop bombs cause why not ~~  DONE <br> 1.1 add visuals for bomb explosion
-2. add music/sound effects (esp. for getting hit/doing damage/shooting)
-3. ~~add start screen ~~ 
-4. ~~add game over condition and screen~~ 
-5. ~~add ability to restart~~ (kinda [ESC + RETURN])
+```
+AIM to SHOOT
+LSHIFT to SPRINT
+SPACE to DROP BOMB
+ESC to EXIT
+```
+
+
+<a href="https://www.flaticon.com/free-icons/" title="icons">Icons from Flaticon</a>
+<a href="https://www.freesound.org" title="icons">Sound Effects from Freesound</a>
+
+
+
+
+
+
 
 ![honest_reactor](https://raup.s-ul.eu/3gXzrQ5W)

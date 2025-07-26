@@ -155,12 +155,14 @@ def update_enemy(enemies):
 
 def get_bomb_pos(player):
     BIrect = pygame.Surface.get_rect(img_bomb)
-    return np.subtract(player.center, (BIrect.width, BIrect.height))
+    pos = np.subtract(player.center, (BIrect.width, BIrect.height))
+    return pos[0] +  30,  pos[1] + 30
 
 def explode_bomb(pos, level, enemies):
     bx,by = pos
     damage_radius = 200
-    damage = 50 + 2*level
+    damage = 50 + 4*level
+    pygame.draw.circle(screen, (25, 25, 25), (int(bx), int(by)), damage_radius, 2)
     for enemy in enemies[:]:
         ex, ey = enemy.center
         dx = abs(ex-bx)
@@ -202,11 +204,7 @@ while True:
             else:                               # GAME ONGOING
                 if event.key == pygame.K_ESCAPE:
                     start_game = False
-                if event.key == pygame.K_TAB:
-                    print('\nShoot rate:', str(shoot_rate),
-                          "\nDamage:", str(player.damage),
-                          '\nSpawn rate:', str(spawn_rate),
-                          '\nBomb damage:', str(50 + 2*level))
+
                             
 
     if not start_game:
@@ -266,7 +264,7 @@ while True:
         shoot_timer = 0
         shoot_rate = 25 # lower = faster
 
-        bomb_count = 10
+        bomb_count = 3
         display_bomb = False
         bomb_cooldown = 0
         bomb_delay = 30
@@ -289,7 +287,7 @@ while True:
     screen.fill((50,50,50))
 
 
-    # if level>25: level = 25 # capped level cause bad shoot_rate scaling, TODO: fix ts (cap shoot_rate instead)
+    # if level>25: level = 25 # capped level cause capped shoot_rate scaling
     player.damage = 10 + 0.175 * level
     player.draw()
 
@@ -334,6 +332,11 @@ while True:
                             player.hp += 10
                             bomb_count+=1
 
+                            print('\nShoot rate:', str(shoot_rate),
+                                "\nDamage:", str(player.damage),
+                                '\nSpawn rate:', str(spawn_rate),
+                                '\nBomb damage:', str(50 + 4*level))
+
                     # display hit marker
                     hit_marker_pos = np.array(enemy.center) + np.array([0, -20])
                     screen.blit(img_hit_marker, hit_marker_pos)
@@ -362,11 +365,11 @@ while True:
     # bomb logic
     bomb_cooldown-=1
     if keys[pygame.K_SPACE] and not display_bomb and bomb_cooldown<=0 and bomb_count>0:
-        bomb_drop_pos = get_bomb_pos(player)
-        bomb_display_pos = bomb_drop_pos[0] +  30,  bomb_drop_pos[1] + 30
+        bomb_drop_pos = player.center
+        bomb_display_pos = get_bomb_pos(player)
         display_bomb = True
         bomb_timer = bomb_delay
-        bomb_cooldown = 60
+        bomb_cooldown = 30
         bomb_count-=1
 
     if display_bomb:
