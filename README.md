@@ -1,5 +1,5 @@
 # A Simple 2D Shooter game
-Made in python, uses pygame, math, sys, random
+Made in python, uses pygame (`pip install pygame`)
 
 
 `
