@@ -1,5 +1,4 @@
 .venv/
 *.code-workspace
 __pycache__/
-*.xcf
 test.py
